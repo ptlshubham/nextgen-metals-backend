@@ -1400,7 +1400,7 @@ router.post("/GetCustomerDataById", (req, res, next) => {
 // })
 
 
-router.post("/UploadBannersImage", (req, res, next) => {
+router.post("/UploadMaterialImage", (req, res, next) => {
     var imgname = generateUUID();
 
     const storage = multer.diskStorage({
