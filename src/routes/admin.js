@@ -27,18 +27,8 @@ const job = schedule.scheduleJob('0 0 * * *', function () {
 });
 
 
-router.post("/SaveServicesList", (req, res, next) => {
-    db.executeSql("INSERT INTO `serviceslist`(`name`, `price`, `time`, `point`, `isactive`, `createdate`,`epoint`)VALUES('" + req.body.name + "'," + req.body.price + "," + req.body.time + "," + req.body.point + ",true,CURRENT_TIMESTAMP," + req.body.epoint + ");", function (data, err) {
-        if (err) {
-            res.json("error");
-        } else {
-
-            return res.json(data);
-        }
-    });
-});
-router.post("/SaveSalaryList", (req, res, next) => {
-    db.executeSql("INSERT INTO `salary`(`salary`, `desc`, `paiddate`, `empid`)VALUES(" + req.body.salary + " , '" + req.body.desc + "' , '" + req.body.paiddate + "' ," + req.body.empid + ");", function (data, err) {
+router.post("/RegisterNewUser", (req, res, next) => {
+    db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`, `GST_no`, `company_contact`, `material_quality`, `bank_name`, `bank_acc_no`, `acc_type`, `acc_holder_name`, `isfc_code`, `branch_name`, `cancel_cheque`, `PAN_card`, `KYC_status`, `created_date`, `updated_date`) VALUES ('"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','["+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"')", function (data, err) {
         if (err) {
             res.json("error");
         } else {
