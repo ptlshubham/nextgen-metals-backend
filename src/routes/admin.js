@@ -1417,12 +1417,12 @@ router.post("/GetCustomerDataById", (req, res, next) => {
 // })
 
 
-router.post("/UploadBannersImage", (req, res, next) => {
+router.post("/UploadMaterialImage", (req, res, next) => {
     var imgname = generateUUID();
 
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'images/banners');
+            cb(null, 'images/material');
         },
         // By default, multer removes file extensions so let's add them back
         filename: function (req, file, cb) {
@@ -1432,7 +1432,7 @@ router.post("/UploadBannersImage", (req, res, next) => {
     });
     let upload = multer({ storage: storage }).single('file');
     upload(req, res, function (err) {
-        console.log("path=", config.url + 'images/banners/' + req.file.filename);
+        console.log("path=", config.url + 'images/material/' + req.file.filename);
 
         if (req.fileValidationError) {
             console.log("err1", req.fileValidationError);
@@ -1447,7 +1447,7 @@ router.post("/UploadBannersImage", (req, res, next) => {
             console.log("err4");
             return res.json("err4", err);
         }
-        return res.json('/images/banners/' + req.file.filename);
+        return res.json('/images/material/' + req.file.filename);
 
 
     });
