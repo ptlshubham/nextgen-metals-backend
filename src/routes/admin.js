@@ -11,24 +11,11 @@ const nodemailer = require('nodemailer');
 var handlebars = require("handlebars");
 const fs = require('fs');
 const schedule = require('node-schedule');
-let dates = new Date(new Date().setDate(new Date().getDate() - 60));
-
-console.log(dates.toISOString().slice(0, 10));
-const job = schedule.scheduleJob('0 0 * * *', function () {
-    console.log('hello schedule')
-    db.executeSql("UPDATE `customer` SET `status`=false WHERE updateddate='" + dates.toISOString().slice(0, 10) + "';", function (data, err) {
-
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(data);
-        }
-    });
-});
 
 
 router.post("/RegisterNewUser", (req, res, next) => {
-    db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`, `GST_no`, `company_contact`, `material_quality`, `bank_name`, `bank_acc_no`, `acc_type`, `acc_holder_name`, `isfc_code`, `branch_name`, `cancel_cheque`, `PAN_card`, `KYC_status`, `created_date`, `updated_date`) VALUES ('"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','["+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"','"+req.body+"')", function (data, err) {
+    console.log(req.body)
+    db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`) VALUES ('"+req.body.select+"','"+req.body.fname+"','"+req.body.lname+"','"+req.body.contact+"','"+req.body.email+"','"+req.body.regAs+"','"+req.body.companyname+"','"+req.body.designation+"','"+req.body.gstno+"','"+req.body.workphone+"','"+req.body.selectMaterial+"',false,CURRENT_TIMESTAMP)", function (data, err) {
         if (err) {
             res.json("error");
         } else {
@@ -38,8 +25,38 @@ router.post("/RegisterNewUser", (req, res, next) => {
     });
 });
 
-router.get("/GetAllServices", (req, res, next) => {
-    db.executeSql("select * from serviceslist", function (data, err) {
+router.get("/getAllBuyer", (req, res, next) => {
+    db.executeSql("select * from user where role='buyer';", function (data, err) {
+        if (err) {
+            console.log(err);
+        } else {
+            return res.json(data);
+        }
+    })
+});
+
+router.get("/getAllSeller", (req, res, next) => {
+    db.executeSql("select * from user where role='seller';", function (data, err) {
+        if (err) {
+            console.log(err);
+        } else {
+            return res.json(data);
+        }
+    })
+});
+
+router.get("/getAllKYCPendingUser", (req, res, next) => {
+    db.executeSql("select * from user where KYC_status=false;", function (data, err) {
+        if (err) {
+            console.log(err);
+        } else {
+            return res.json(data);
+        }
+    })
+});
+
+router.post("/updateKYCUser", (req, res, next) => {
+    db.executeSql("update user set KYC_status=true where id="+req.body.id, function (data, err) {
         if (err) {
             console.log(err);
         } else {
