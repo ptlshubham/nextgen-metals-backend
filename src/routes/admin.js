@@ -15,7 +15,7 @@ const schedule = require('node-schedule');
 
 router.post("/RegisterNewUser", (req, res, next) => {
     console.log(req.body)
-    db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`) VALUES ('"+req.body.select+"','"+req.body.fname+"','"+req.body.lname+"','"+req.body.contact+"','"+req.body.email+"','"+req.body.regAs+"','"+req.body.companyname+"','"+req.body.designation+"','"+req.body.gstno+"','"+req.body.workphone+"','"+req.body.selectMaterial+"',false,CURRENT_TIMESTAMP)", function (data, err) {
+    db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`,`avg_mnth_trade`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`) VALUES ('"+req.body.select+"','"+req.body.fname+"','"+req.body.lname+"','"+req.body.contact+"','"+req.body.email+"','"+req.body.regAs+"','"+req.body.companyname+"','"+req.body.designation+"','"+req.body.avg_mnth_trade+"','"+req.body.gstno+"','"+req.body.workphone+"','"+req.body.selectMaterial+"',false,CURRENT_TIMESTAMP)", function (data, err) {
         if (err) {
             res.json("error");
         } else {
