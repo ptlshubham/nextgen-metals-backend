@@ -136,6 +136,102 @@ router.post("/updateKYCUser", (req, res, next) => {
         }
     })
 });
+
+router.post("/UploadMaterialImage", (req, res, next) => {
+    var imgname = generateUUID();
+
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'images/material');
+        },
+        // By default, multer removes file extensions so let's add them back
+        filename: function (req, file, cb) {
+
+            cb(null, imgname + path.extname(file.originalname));
+        }
+    });
+    let upload = multer({ storage: storage }).single('file');
+    upload(req, res, function (err) {
+        console.log("path=", config.url + 'images/material/' + req.file.filename);
+
+        if (req.fileValidationError) {
+            console.log("err1", req.fileValidationError);
+            return res.json("err1", req.fileValidationError);
+        } else if (!req.file) {
+            console.log('Please select an image to upload');
+            return res.json('Please select an image to upload');
+        } else if (err instanceof multer.MulterError) {
+            console.log("err3");
+            return res.json("err3", err);
+        } else if (err) {
+            console.log("err4");
+            return res.json("err4", err);
+        }
+        return res.json('/images/material/' + req.file.filename);
+
+
+    });
+});
+router.post("/UploadCancelCheckImage", (req, res, next) => {
+    var imgname = generateUUID();
+
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'images/cancelcheck');
+        },
+        // By default, multer removes file extensions so let's add them back
+        filename: function (req, file, cb) {
+
+            cb(null, imgname + path.extname(file.originalname));
+        }
+    });
+    let upload = multer({ storage: storage }).single('file');
+    upload(req, res, function (err) {
+        console.log("path=", config.url + 'images/cancelcheck/' + req.file.filename);
+
+        if (req.fileValidationError) {
+            console.log("err1", req.fileValidationError);
+            return res.json("err1", req.fileValidationError);
+        } else if (!req.file) {
+            console.log('Please select an image to upload');
+            return res.json('Please select an image to upload');
+        } else if (err instanceof multer.MulterError) {
+            console.log("err3");
+            return res.json("err3", err);
+        } else if (err) {
+            console.log("err4");
+            return res.json("err4", err);
+        }
+        return res.json('/images/cancelcheck/' + req.file.filename);
+
+
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var nowDate = new Date();
 date = nowDate.getFullYear() + '-' + (nowDate.getMonth() + 1) + '-' + nowDate.getDate();
 router.get("/GetDailyTotal", (req, res, next) => {
@@ -899,41 +995,7 @@ router.post("/GetCustomerDataById", (req, res, next) => {
 // })
 
 
-router.post("/UploadMaterialImage", (req, res, next) => {
-    var imgname = generateUUID();
 
-    const storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-            cb(null, 'images/material');
-        },
-        // By default, multer removes file extensions so let's add them back
-        filename: function (req, file, cb) {
-
-            cb(null, imgname + path.extname(file.originalname));
-        }
-    });
-    let upload = multer({ storage: storage }).single('file');
-    upload(req, res, function (err) {
-        console.log("path=", config.url + 'images/material/' + req.file.filename);
-
-        if (req.fileValidationError) {
-            console.log("err1", req.fileValidationError);
-            return res.json("err1", req.fileValidationError);
-        } else if (!req.file) {
-            console.log('Please select an image to upload');
-            return res.json('Please select an image to upload');
-        } else if (err instanceof multer.MulterError) {
-            console.log("err3");
-            return res.json("err3", err);
-        } else if (err) {
-            console.log("err4");
-            return res.json("err4", err);
-        }
-        return res.json('/images/material/' + req.file.filename);
-
-
-    });
-});
 
 router.post("/SaveWebBanners", (req, res, next) => {
     console.log(req.body);
