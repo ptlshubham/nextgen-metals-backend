@@ -216,22 +216,6 @@ router.post("/UploadCancelCheckImage", (req, res, next) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var nowDate = new Date();
 date = nowDate.getFullYear() + '-' + (nowDate.getMonth() + 1) + '-' + nowDate.getDate();
 router.get("/GetDailyTotal", (req, res, next) => {
