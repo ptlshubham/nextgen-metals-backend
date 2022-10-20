@@ -41,6 +41,29 @@ router.post("/RegisterNewUser", (req, res, next) => {
     });
 });
 
+
+router.post("/completeProfile",(req,res,next)=>{
+    console.log(req.body)
+    db.executeSql("UPDATE `user` SET `firstName`='"+req.body.firstName+"',`lastName`='"+req.body.lastName+"',`phone`='"+req.body.phone+"',`email`='"+req.body.email+"',`companyName`='"+req.body.companyName+"',`designation`='"+req.body.designation+"',`avg_mnth_trade`='"+req.body.avg_mnth_trade+"',`GST_no`='"+req.body.GST_no+"',`company_contact`='"+req.body.company_contact+"',`material_quality`='"+req.body.material_quality+"',`bank_name`='"+req.body.bank_name+"',`bank_acc_no`='"+req.body.bank_acc_no+"',`acc_type`='"+req.body.acc_type+"',`acc_holder_name`='"+req.body.acc_holder_name+"',`isfc_code`='"+req.body.isfc_code+"',`branch_name`='"+req.body.branch_name+"',`cancel_cheque`='"+req.body.cancel_cheque+"',`PAN_card`='"+req.body.PAN_card+"',`updated_date`=CURRENT_TIMESTAMP,`profileUpdation`=true WHERE id="+req.body.id,function(data,err){
+        if(err){
+            console.log(err);
+        }else{
+            res.json('success');
+        }
+    })
+})
+
+router.get("/getUserDetailById/:id",(req,res,next)=>{
+    db.executeSql("select * from user where id="+req.params.id,function(data,err){
+        if(err){
+            console.log(err)
+        }
+        else{
+            res.json(data)
+        }
+    })
+})
+
 router.get("/getAllUser", (req, res, next) => {
     db.executeSql("select * from user;", function (data, err) {
         if (err) {
@@ -82,7 +105,7 @@ router.get("/getAllKYCPendingUser", (req, res, next) => {
 });
 
 router.post("/updateKYCUser", (req, res, next) => {
-    db.executeSql("update user set KYC_status=true where id="+req.body.id, function (data, err) {
+    db.executeSql("update user set KYC_status=true, KYC_date=CURRENT_TIMESTAMP where id="+req.body.id, function (data, err) {
         if (err) {
             console.log(err);
         } else {
