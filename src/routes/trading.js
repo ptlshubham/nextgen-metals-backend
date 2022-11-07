@@ -13,7 +13,7 @@ const fs = require('fs');
 const schedule = require('node-schedule');
 
 
-router.post("/newTradeRequest", (req, res, next) => {
+router.post("/newTradeRequest", midway.checkToken, (req, res, next) => {
     console.log(req.body)
     db.executeSql("INSERT INTO `trades`( `buyerName`, `buyerLocation`, `buyerId`, `req_quality`, `req_quantity`, `payment_terms`, `payment_days`, `payment_validity`, `buyerRate`, `tradeStatus`) VALUES ('"+req.body.buyerName+"','"+req.body.buyerLocation+"','"+req.body.buyerId+"','"+req.body.material_quality+"','"+req.body.quantity+"','"+req.body.payment_terms+"','"+req.body.payment_days+"','"+req.body.payment_validity+"','"+req.body.buyerRate+"','"+req.body.tradeStatus+"');",function(data,err){
         if(err){
@@ -24,7 +24,7 @@ router.post("/newTradeRequest", (req, res, next) => {
     });
 });
 
-router.post("/getNewTradingDatabyIdForBuyer",(req,res,next)=>{
+router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken,(req,res,next)=>{
     db.executeSql("select * from trades where  buyerId="+req.body.uid+" and tradeStatus='IDEAL';",function(data,err){
         if(err){
             console.log(err);
@@ -35,7 +35,7 @@ router.post("/getNewTradingDatabyIdForBuyer",(req,res,next)=>{
 });
 
 
-router.post("/getAllTradingDatabyIdForBuyer",(req,res,next)=>{
+router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken,(req,res,next)=>{
     db.executeSql("select * from trades where  buyerId="+req.body.uid+";",function(data,err){
         if(err){
             console.log(err);
@@ -45,7 +45,7 @@ router.post("/getAllTradingDatabyIdForBuyer",(req,res,next)=>{
     })
 });
 
-router.post("/getAllTradingDatabyIdForSeller",(req,res,next)=>{
+router.post("/getAllTradingDatabyIdForSeller", midway.checkToken,(req,res,next)=>{
     db.executeSql("select * from trades where  sellerId="+req.body.uid+";",function(data,err){
         if(err){
             console.log(err);
@@ -55,7 +55,7 @@ router.post("/getAllTradingDatabyIdForSeller",(req,res,next)=>{
     })
 });
 
-router.post("/saveSellerTradeRequest",(req,res,next)=>{
+router.post("/saveSellerTradeRequest", midway.checkToken,(req,res,next)=>{
     db.executeSql("UPDATE `trades` set `sellerName`='"+req.body.name+"',`sellerId`='"+req.body.sellerId+"',`sellerLocation`='"+req.body.sellerLocation+"',`sellerQuantity`='"+req.body.sell_quantity+"',`sellerRate`='null',`materialImage`='"+req.body.materialImage+"',`deliveryTerms`='"+req.body.diliveryterms+"',`tradeStatus`='PENDING',`updatedDate`=CURRENT_TIMESTAMP WHERE id="+req.body.orderId,function(data,err){
         if(err){
             console.log(err);
@@ -65,7 +65,7 @@ router.post("/saveSellerTradeRequest",(req,res,next)=>{
     })
 })
 
-router.post("/getNewTradingReqForSeller",(req,res,next)=>{
+router.post("/getNewTradingReqForSeller", midway.checkToken,(req,res,next)=>{
     db.executeSql("SELECT t.id as orderId, u.firstName as buyFirstName,t.payment_days, u.lastName as buyLastName, t.buyerLocation ,t.req_quality,t.req_quantity,t.buyerRate,t.deliveryTerms,t.payment_validity,t.payment_terms from trades t join user u on u.id = t.buyerId where  t.req_quality='"+req.body.mat_qlty+"'  and t.tradeStatus='IDEAL';",function(data,err){
         if(err){
             console.log(err);
@@ -87,7 +87,7 @@ router.post("/RegisterNewUser", (req, res, next) => {
 });
 
 
-router.post("/completeProfile",(req,res,next)=>{
+router.post("/completeProfile", midway.checkToken,(req,res,next)=>{
     console.log(req.body)
     db.executeSql("UPDATE `user` SET `firstName`='"+req.body.firstName+"',`lastName`='"+req.body.lastName+"',`phone`='"+req.body.phone+"',`email`='"+req.body.email+"',`companyName`='"+req.body.companyName+"',`designation`='"+req.body.designation+"',`avg_mnth_trade`='"+req.body.avg_mnth_trade+"',`GST_no`='"+req.body.GST_no+"',`company_contact`='"+req.body.company_contact+"',`material_quality`='"+req.body.material_quality+"',`bank_name`='"+req.body.bank_name+"',`bank_acc_no`='"+req.body.bank_acc_no+"',`acc_type`='"+req.body.acc_type+"',`acc_holder_name`='"+req.body.acc_holder_name+"',`isfc_code`='"+req.body.isfc_code+"',`branch_name`='"+req.body.branch_name+"',`cancel_cheque`='"+req.body.cancel_cheque+"',`PAN_card`='"+req.body.PAN_card+"',`updated_date`=CURRENT_TIMESTAMP,`profileUpdation`=true WHERE id="+req.body.id,function(data,err){
         if(err){
@@ -98,7 +98,7 @@ router.post("/completeProfile",(req,res,next)=>{
     })
 })
 
-router.get("/getUserDetailById/:id",(req,res,next)=>{
+router.get("/getUserDetailById/:id", midway.checkToken,(req,res,next)=>{
     db.executeSql("select * from user where id="+req.params.id,function(data,err){
         if(err){
             console.log(err)
@@ -109,7 +109,7 @@ router.get("/getUserDetailById/:id",(req,res,next)=>{
     })
 })
 
-router.get("/getAllUser", (req, res, next) => {
+router.get("/getAllUser", midway.checkToken, (req, res, next) => {
     db.executeSql("select * from user;", function (data, err) {
         if (err) {
             console.log(err);
@@ -119,7 +119,7 @@ router.get("/getAllUser", (req, res, next) => {
     })
 });
 
-router.get("/getAllBuyer", (req, res, next) => {
+router.get("/getAllBuyer", midway.checkToken, (req, res, next) => {
     db.executeSql("select * from user where role='buyer' and KYC_status=true;", function (data, err) {
         if (err) {
             console.log(err);

@@ -14,10 +14,16 @@ let checkToken = (req, res, next) => {
     jwt.verify(token, 'prnv', (err, decoded) => {
       if (err) {
          console.log("erroe here");
-        return res.json({
-          success: false,
-          message: 'Token is not valid'
-        });
+        //  res.json({ status: 401, error: { message: 'Unauthorised' } });
+         let err = new Error('unautherize');
+          err.status = 401;
+          throw err;
+        
+        
+        // res.json({
+        //   success: false,
+        //   message: 'Token is not valid'
+        // });
       } 
       else {
         if(user.user !=  undefined){
@@ -39,10 +45,9 @@ let checkToken = (req, res, next) => {
     });
   } else {
     console.log("erroe here123");
-    return res.json({
-      success: false,
-      message: 'Auth token is not supplied'
-    });
+    let err = new Error('noToken');
+          err.status = 111;
+          throw err;
   }
 };
 
