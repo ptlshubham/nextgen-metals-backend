@@ -36,7 +36,7 @@ router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken,(req,res,next)=>
 
 
 router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken,(req,res,next)=>{
-    db.executeSql("select * from trades where  buyerId="+req.body.uid+";",function(data,err){
+    db.executeSql("select * from trades t left join address a on t.sellerId = a.uid where  t.buyerId="+req.body.uid,function(data,err){
         if(err){
             console.log(err);
         }else{
@@ -46,10 +46,12 @@ router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken,(req,res,next)=>
 });
 
 router.post("/getAllTradingDatabyIdForSeller", midway.checkToken,(req,res,next)=>{
-    db.executeSql("select * from trades where  sellerId="+req.body.uid+";",function(data,err){
+    console.log("vfvfvfvfvf")
+    db.executeSql("select * from trades t left join user u on t.buyerId = u.id left join address a on t.buyerId = a.uid where t.sellerId="+req.body.uid+";",function(data,err){
         if(err){
             console.log(err);
         }else{
+            console.log(data)
             res.json(data);
         }
     })
@@ -66,7 +68,7 @@ router.post("/saveSellerTradeRequest", midway.checkToken,(req,res,next)=>{
 })
 
 router.post("/getNewTradingReqForSeller", midway.checkToken,(req,res,next)=>{
-    db.executeSql("SELECT t.id as orderId, u.firstName as buyFirstName,t.payment_days, u.lastName as buyLastName, t.buyerLocation ,t.req_quality,t.req_quantity,t.buyerRate,t.deliveryTerms,t.payment_validity,t.payment_terms from trades t join user u on u.id = t.buyerId where  t.req_quality='"+req.body.mat_qlty+"'  and t.tradeStatus='IDEAL';",function(data,err){
+    db.executeSql("SELECT t.id as orderId, u.firstName as buyFirstName,t.payment_days, u.lastName as buyLastName, t.buyerLocation ,t.req_quality,t.req_quantity,t.buyerRate,t.deliveryTerms,t.payment_validity,t.payment_terms, a.street,a.state,a.city,a.pincode from trades t join user u on u.id = t.buyerId join address a on a.uid = t.buyerId where  t.req_quality='"+req.body.mat_qlty+"'  and t.tradeStatus='IDEAL';",function(data,err){
         if(err){
             console.log(err);
         }else{

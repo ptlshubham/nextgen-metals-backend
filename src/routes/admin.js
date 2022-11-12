@@ -54,7 +54,7 @@ router.post("/completeProfile", midway.checkToken,(req,res,next)=>{
 })
 
 router.get("/getUserDetailById/:id", midway.checkToken,(req,res,next)=>{
-    db.executeSql("select * from user where id="+req.params.id,function(data,err){
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid where u.id="+req.params.id,function(data,err){
         if(err){
             console.log(err)
         }
@@ -65,7 +65,7 @@ router.get("/getUserDetailById/:id", midway.checkToken,(req,res,next)=>{
 })
 
 router.get("/getAllUser", midway.checkToken, (req, res, next) => {
-    db.executeSql("select * from user;", function (data, err) {
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid;;", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -75,7 +75,7 @@ router.get("/getAllUser", midway.checkToken, (req, res, next) => {
 });
 
 router.get("/getAllBuyer", midway.checkToken, (req, res, next) => {
-    db.executeSql("select * from user where role='buyer' and KYC_status=true;", function (data, err) {
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid where u.role='buyer' and u.KYC_status=true;", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -85,7 +85,7 @@ router.get("/getAllBuyer", midway.checkToken, (req, res, next) => {
 });
 
 router.get("/getAllSeller", midway.checkToken, (req, res, next) => {
-    db.executeSql("select * from user where role='seller' and KYC_status=true;", function (data, err) {
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid where u.role='seller' and u.KYC_status=true;", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -95,7 +95,7 @@ router.get("/getAllSeller", midway.checkToken, (req, res, next) => {
 });
 
 router.get("/getAllKYCPendingUser", midway.checkToken, (req, res, next) => {
-    db.executeSql("select * from user where KYC_status=false;", function (data, err) {
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid; where u.KYC_status=false;", function (data, err) {
         if (err) {
             console.log(err);
         } else {
