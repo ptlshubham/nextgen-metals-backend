@@ -78,14 +78,28 @@ router.post("/getNewTradingReqForSeller", midway.checkToken,(req,res,next)=>{
 })
 
 router.post("/RegisterNewUser", (req, res, next) => {
-    console.log(req.body)
-    db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`,`avg_mnth_trade`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`) VALUES ('" + req.body.select + "','" + req.body.fname + "','" + req.body.lname + "','" + req.body.contact + "','" + req.body.email + "','" + req.body.regAs + "','" + req.body.companyname + "','" + req.body.designation + "','" + req.body.avg_mnth_trade + "','" + req.body.gstno + "','" + req.body.workphone + "','" + req.body.selectMaterial + "',false,CURRENT_TIMESTAMP)", function (data, err) {
-        if (err) {
-            res.json("error");
+    // console.log(req.body);
+    db.executeSql("select * from user where email='" + req.body.email + "'", function (data, err) {
+        if (data.length > 0) {
+            res.json('duplicate email');
         } else {
-            return res.json('sucess');
+            db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`,`avg_mnth_trade`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`,`profileUpdation`) VALUES ('" + req.body.select + "','" + req.body.fname + "','" + req.body.lname + "','" + req.body.contact + "','" + req.body.email + "','" + req.body.regAs + "','" + req.body.companyname + "','" + req.body.designation + "','" + req.body.avg_mnth_trade + "','" + req.body.gstno + "','" + req.body.workphone + "','" + req.body.selectMaterial + "',false,CURRENT_TIMESTAMP,false)", function (data3, err) {
+                if (err) {
+                    res.json("error");
+                } else {
+                    db.executeSql("INSERT INTO `address`(`uid`, `street`, `city`, `state`, `pincode`, `landmark`,`createddate`) VALUES (" + data3.insertId + ",'" + req.body.address + "','" + req.body.city + "','" + req.body.selectState + "'," + req.body.pincode + ",'" + req.body.landmark + "',CURRENT_TIMESTAMP)", function (data1, err) {
+                        if (err) {
+                            res.json("error");
+                        } else {
+                        }
+                    });
+                }
+            });
         }
-    });
+        return res.json('sucess');
+
+    })
+
 });
 
 
@@ -131,7 +145,7 @@ router.get("/getAllBuyer", midway.checkToken, (req, res, next) => {
     })
 });
 router.post("/NewComissionPaymentForBuyer", midway.checkToken, (req, res, next) => {
-    console.log("req.body")
+    console.log(req.body);
     db.executeSql("UPDATE `trades` set `tradeStatus`='ACCEPTED',`buyerComissionPay`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.id, function (data, err) {
         if (err) {
             console.log(err);
@@ -142,7 +156,6 @@ router.post("/NewComissionPaymentForBuyer", midway.checkToken, (req, res, next) 
 })
 
 router.post("/NewComissionPaymentForSeller", midway.checkToken, (req, res, next) => {
-    console.log("req.body")
     db.executeSql("UPDATE `trades` set `sellerComissionPay`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.id, function (data, err) {
         if (err) {
             console.log(err);
