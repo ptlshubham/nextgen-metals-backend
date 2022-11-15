@@ -118,6 +118,8 @@ router.post("/updateKYCUser", midway.checkToken, (req, res, next) => {
                         email: data1[0].firstName,
                         id:req.body.id
                     };
+
+                    
                     mail('newpassword.html', replacements, data1[0].email, "Setting Password", "New Password for Nextgen ");
                     var salt = '7fa73b47df808d36c5fe328546ddef8b9011b2c6';
                     var repass = salt + '' + data1[0].firstName+'@123';
