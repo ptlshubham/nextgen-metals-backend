@@ -24,6 +24,17 @@ router.post("/newTradeRequest", midway.checkToken, (req, res, next) => {
     });
 });
 
+router.post("/SaveTransporterDetails", midway.checkToken, (req, res, next) => {
+    console.log(req.body)
+    db.executeSql("INSERT INTO `transport_trade`(`orderId`, `startDate`, `driverContact`, `vehicleNo`, `createdDate`) VALUES (" + req.body.order_Id + ",CURRENT_TIMESTAMP," + req.body.transporterContact + ",'" + req.body.transportVehicle + "',CURRENT_TIMESTAMP);", function (data, err) {
+        if (err) {
+            console.log(err);
+        } else {
+            return res.json('sucess');
+        }
+    });
+});
+
 router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken, (req, res, next) => {
     db.executeSql("select * from trades where  buyerId=" + req.body.uid + " and tradeStatus='IDEAL';", function (data, err) {
         if (err) {
@@ -35,9 +46,9 @@ router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken, (req, res, next
 });
 
 
-router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken,(req,res,next)=>{
-    db.executeSql("select * from trades t left join address a on t.sellerId = a.uid where  t.buyerId="+req.body.uid,function(data,err){
-        if(err){
+router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken, (req, res, next) => {
+    db.executeSql("select * from trades t left join address a on t.sellerId = a.uid where  t.buyerId=" + req.body.uid, function (data, err) {
+        if (err) {
             console.log(err);
         } else {
             res.json(data);
@@ -45,12 +56,12 @@ router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken,(req,res,next)=>
     })
 });
 
-router.post("/getAllTradingDatabyIdForSeller", midway.checkToken,(req,res,next)=>{
+router.post("/getAllTradingDatabyIdForSeller", midway.checkToken, (req, res, next) => {
     console.log("vfvfvfvfvf")
-    db.executeSql("select * from trades t left join user u on t.buyerId = u.id left join address a on t.buyerId = a.uid where t.sellerId="+req.body.uid+";",function(data,err){
-        if(err){
+    db.executeSql("select * from trades t left join user u on t.buyerId = u.id left join address a on t.buyerId = a.uid where t.sellerId=" + req.body.uid + ";", function (data, err) {
+        if (err) {
             console.log(err);
-        }else{
+        } else {
             console.log(data)
             res.json(data);
         }
@@ -67,9 +78,9 @@ router.post("/saveSellerTradeRequest", midway.checkToken, (req, res, next) => {
     })
 })
 
-router.post("/getNewTradingReqForSeller", midway.checkToken,(req,res,next)=>{
-    db.executeSql("SELECT t.id as orderId, u.firstName as buyFirstName,t.payment_days, u.lastName as buyLastName, t.buyerLocation ,t.req_quality,t.req_quantity,t.buyerRate,t.deliveryTerms,t.payment_validity,t.payment_terms, a.street,a.state,a.city,a.pincode from trades t join user u on u.id = t.buyerId join address a on a.uid = t.buyerId where  t.req_quality='"+req.body.mat_qlty+"'  and t.tradeStatus='IDEAL';",function(data,err){
-        if(err){
+router.post("/getNewTradingReqForSeller", midway.checkToken, (req, res, next) => {
+    db.executeSql("SELECT t.id as orderId, u.firstName as buyFirstName,t.payment_days, u.lastName as buyLastName, t.buyerLocation ,t.req_quality,t.req_quantity,t.buyerRate,t.deliveryTerms,t.payment_validity,t.payment_terms, a.street,a.state,a.city,a.pincode from trades t join user u on u.id = t.buyerId join address a on a.uid = t.buyerId where  t.req_quality='" + req.body.mat_qlty + "'  and t.tradeStatus='IDEAL';", function (data, err) {
+        if (err) {
             console.log(err);
         } else {
             res.json(data);
@@ -164,6 +175,113 @@ router.post("/NewComissionPaymentForSeller", midway.checkToken, (req, res, next)
         }
     })
 })
+router.post("/UploadWeightSlipImage", midway.checkToken, (req, res, next) => {
+    var imgname = generateUUID();
+
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'images/weight');
+        },
+        // By default, multer removes file extensions so let's add them back
+        filename: function (req, file, cb) {
+
+            cb(null, imgname + path.extname(file.originalname));
+        }
+    });
+    let upload = multer({ storage: storage }).single('file');
+    upload(req, res, function (err) {
+        console.log("path=", config.url + 'images/weight/' + req.file.filename);
+
+        if (req.fileValidationError) {
+            console.log("err1", req.fileValidationError);
+            return res.json("err1", req.fileValidationError);
+        } else if (!req.file) {
+            console.log('Please select an image to upload');
+            return res.json('Please select an image to upload');
+        } else if (err instanceof multer.MulterError) {
+            console.log("err3");
+            return res.json("err3", err);
+        } else if (err) {
+            console.log("err4");
+            return res.json("err4", err);
+        }
+        return res.json('/images/weight/' + req.file.filename);
+
+
+    });
+});
+
+router.post("/UploadDeliveryRecieptImage", midway.checkToken, (req, res, next) => {
+    var imgname = generateUUID();
+
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'images/weight');
+        },
+        // By default, multer removes file extensions so let's add them back
+        filename: function (req, file, cb) {
+
+            cb(null, imgname + path.extname(file.originalname));
+        }
+    });
+    let upload = multer({ storage: storage }).single('file');
+    upload(req, res, function (err) {
+        console.log("path=", config.url + 'images/weight/' + req.file.filename);
+
+        if (req.fileValidationError) {
+            console.log("err1", req.fileValidationError);
+            return res.json("err1", req.fileValidationError);
+        } else if (!req.file) {
+            console.log('Please select an image to upload');
+            return res.json('Please select an image to upload');
+        } else if (err instanceof multer.MulterError) {
+            console.log("err3");
+            return res.json("err3", err);
+        } else if (err) {
+            console.log("err4");
+            return res.json("err4", err);
+        }
+        return res.json('/images/weight/' + req.file.filename);
+
+
+    });
+});
+
+router.post("/UploadPaymentSlipImage", midway.checkToken, (req, res, next) => {
+    var imgname = generateUUID();
+
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'images/payment');
+        },
+        // By default, multer removes file extensions so let's add them back
+        filename: function (req, file, cb) {
+
+            cb(null, imgname + path.extname(file.originalname));
+        }
+    });
+    let upload = multer({ storage: storage }).single('file');
+    upload(req, res, function (err) {
+        console.log("path=", config.url + 'images/payment/' + req.file.filename);
+
+        if (req.fileValidationError) {
+            console.log("err1", req.fileValidationError);
+            return res.json("err1", req.fileValidationError);
+        } else if (!req.file) {
+            console.log('Please select an image to upload');
+            return res.json('Please select an image to upload');
+        } else if (err instanceof multer.MulterError) {
+            console.log("err3");
+            return res.json("err3", err);
+        } else if (err) {
+            console.log("err4");
+            return res.json("err4", err);
+        }
+        return res.json('/images/payment/' + req.file.filename);
+
+
+    });
+});
 function generateUUID() {
     var d = new Date().getTime();
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
