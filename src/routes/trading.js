@@ -36,7 +36,7 @@ router.post("/SaveTransporterDetails", midway.checkToken, (req, res, next) => {
 });
 
 router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken, (req, res, next) => {
-    db.executeSql("select * from trades where  buyerId=" + req.body.uid + " and tradeStatus='IDEAL';", function (data, err) {
+    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerLocation,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerLocation,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.createdDate,t.updatedDate from trades where  t.buyerId=" + req.body.uid + " and t.tradeStatus='IDEAL';", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -47,7 +47,7 @@ router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken, (req, res, next
 
 
 router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken, (req, res, next) => {
-    db.executeSql("select * from trades t left join address a on t.sellerId = a.uid where  t.buyerId=" + req.body.uid, function (data, err) {
+    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerLocation,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerLocation,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.createdDate,t.updatedDate , a.street,a.city,a.state,a.pincode from trades t left join address a on t.sellerId = a.uid where  t.buyerId=" + req.body.uid, function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -58,7 +58,7 @@ router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken, (req, res, next
 
 router.post("/getAllTradingDatabyIdForSeller", midway.checkToken, (req, res, next) => {
     console.log("vfvfvfvfvf")
-    db.executeSql("select * from trades t left join user u on t.buyerId = u.id left join address a on t.buyerId = a.uid where t.sellerId=" + req.body.uid + ";", function (data, err) {
+    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerLocation,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerLocation,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.createdDate,t.updatedDate,a.street,a.city,a.state,a.pincode,a.landmark from trades t left join user u on t.buyerId = u.id left join address a on t.buyerId = a.uid where t.sellerId=" + req.body.uid + ";", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -157,7 +157,7 @@ router.get("/getAllBuyer", midway.checkToken, (req, res, next) => {
 });
 router.post("/NewComissionPaymentForBuyer", midway.checkToken, (req, res, next) => {
     console.log(req.body);
-    db.executeSql("UPDATE `trades` set `tradeStatus`='ACCEPTED',`buyerComissionPay`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.id, function (data, err) {
+    db.executeSql("UPDATE `trades` set `tradeStatus`='ACCEPTED',`buyerComissionPay`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.tradeId, function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -167,7 +167,7 @@ router.post("/NewComissionPaymentForBuyer", midway.checkToken, (req, res, next) 
 })
 
 router.post("/NewComissionPaymentForSeller", midway.checkToken, (req, res, next) => {
-    db.executeSql("UPDATE `trades` set `sellerComissionPay`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.id, function (data, err) {
+    db.executeSql("UPDATE `trades` set `sellerComissionPay`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.tradeId, function (data, err) {
         if (err) {
             console.log(err);
         } else {
