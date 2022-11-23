@@ -5,17 +5,12 @@ const multer = require('multer');
 const path = require('path');
 const config = require("../../config");
 var midway = require('./midway');
-const jwt = require('jsonwebtoken');
-var crypto = require('crypto');
-const nodemailer = require('nodemailer');
-var handlebars = require("handlebars");
-const fs = require('fs');
-const schedule = require('node-schedule');
+
 
 
 router.post("/newTradeRequest", midway.checkToken, (req, res, next) => {
     console.log(req.body)
-    db.executeSql("INSERT INTO `trades`( `buyerName`, `buyerLocation`, `buyerId`, `req_quality`, `req_quantity`, `payment_terms`, `payment_days`, `payment_validity`, `buyerRate`, `tradeStatus`) VALUES ('" + req.body.buyerName + "','" + req.body.buyerLocation + "','" + req.body.buyerId + "','" + req.body.material_quality + "','" + req.body.quantity + "','" + req.body.payment_terms + "','" + req.body.payment_days + "','" + req.body.payment_validity + "','" + req.body.buyerRate + "','" + req.body.tradeStatus + "');", function (data, err) {
+    db.executeSql("INSERT INTO `trades`( `buyerName`, `buyerId`, `req_quality`, `req_quantity`, `payment_terms`, `payment_days`, `payment_validity`, `buyerRate`, `tradeStatus`) VALUES ('" + req.body.buyerName + "','" + req.body.buyerId + "','" + req.body.material_quality + "','" + req.body.quantity + "','" + req.body.payment_terms + "','" + req.body.payment_days + "','" + req.body.payment_validity + "','" + req.body.buyerRate + "','" + req.body.tradeStatus + "');", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -25,18 +20,33 @@ router.post("/newTradeRequest", midway.checkToken, (req, res, next) => {
 });
 
 router.post("/SaveTransporterDetails", midway.checkToken, (req, res, next) => {
-    console.log(req.body)
-    db.executeSql("INSERT INTO `transport_trade`(`orderId`, `startDate`, `driverContact`, `vehicleNo`, `createdDate`) VALUES (" + req.body.order_Id + ",CURRENT_TIMESTAMP," + req.body.transporterContact + ",'" + req.body.transportVehicle + "',CURRENT_TIMESTAMP);", function (data, err) {
+    db.executeSql("INSERT INTO `transport_trade`(`orderId`, `startDate`, `driverContact`, `vehicleNo`, `weightSlip`, `createdDate`) VALUES (" + req.body.tradeId + ",CURRENT_TIMESTAMP," + req.body.transporterContact + ",'" + req.body.transportVehicle + "','" + req.body.materialWeightSlip + "',CURRENT_TIMESTAMP);", function (data, err) {
         if (err) {
             console.log(err);
         } else {
-            return res.json('sucess');
+            db.executeSql("UPDATE `trades` set `transportDetailsStatus`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.tradeId, function (data, err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                }
+            })
         }
+        return res.json('sucess');
+
     });
 });
 
+router.post("/GetTransporterDetailsbyIdForSeller", midway.checkToken, (req, res, next) => {
+    db.executeSql("SELECT * FROM `transport_trade`WHERE orderId=" + req.body.tradeId + ";", function (data, err) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.json(data);
+        }
+    })
+});
 router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken, (req, res, next) => {
-    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerLocation,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerLocation,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.createdDate,t.updatedDate from trades where  t.buyerId=" + req.body.uid + " and t.tradeStatus='IDEAL';", function (data, err) {
+    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.buyerComissionPay,t.sellerComissionPay,t.transportDetailsStatus,t.createdDate,t.updatedDate from trades where  t.buyerId=" + req.body.uid + " and t.tradeStatus='IDEAL';", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -47,7 +57,7 @@ router.post("/getNewTradingDatabyIdForBuyer", midway.checkToken, (req, res, next
 
 
 router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken, (req, res, next) => {
-    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerLocation,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerLocation,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.createdDate,t.updatedDate , a.street,a.city,a.state,a.pincode from trades t left join address a on t.sellerId = a.uid where  t.buyerId=" + req.body.uid, function (data, err) {
+    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.sellerQuantity,t.buyerRate,t.sellerName,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.buyerComissionPay,t.sellerComissionPay,t.transportDetailsStatus,t.createdDate,t.updatedDate , a.street,a.city,a.state,a.pincode from trades t left join address a on t.sellerId = a.uid where  t.buyerId=" + req.body.uid, function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -58,7 +68,7 @@ router.post("/getAllTradingDatabyIdForBuyer", midway.checkToken, (req, res, next
 
 router.post("/getAllTradingDatabyIdForSeller", midway.checkToken, (req, res, next) => {
     console.log("vfvfvfvfvf")
-    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerLocation,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerLocation,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.createdDate,t.updatedDate,a.street,a.city,a.state,a.pincode,a.landmark from trades t left join user u on t.buyerId = u.id left join address a on t.buyerId = a.uid where t.sellerId=" + req.body.uid + ";", function (data, err) {
+    db.executeSql("select t.id as tradeId,t.buyerName,t.buyerId,t.req_quality,t.req_quantity,t.payment_terms,t.payment_days,t.payment_validity,t.buyerRate,t.sellerName,t.sellerId,t.sellerQuantity,t.sellerRate,t.materialImage,t.deliveryTerms,t.tradeStatus,t.buyerComissionPay,t.sellerComissionPay,t.transportDetailsStatus,t.createdDate,t.updatedDate,a.street,a.city,a.state,a.pincode,a.landmark from trades t left join user u on t.buyerId = u.id left join address a on t.buyerId = a.uid where t.sellerId=" + req.body.uid + ";", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -69,17 +79,27 @@ router.post("/getAllTradingDatabyIdForSeller", midway.checkToken, (req, res, nex
 });
 
 router.post("/saveSellerTradeRequest", midway.checkToken, (req, res, next) => {
-    db.executeSql("UPDATE `trades` set `sellerName`='" + req.body.name + "',`sellerId`='" + req.body.sellerId + "',`sellerLocation`='" + req.body.sellerLocation + "',`sellerQuantity`='" + req.body.sell_quantity + "',`sellerRate`='null',`materialImage`='" + req.body.materialImage + "',`deliveryTerms`='" + req.body.diliveryterms + "',`tradeStatus`='PENDING',`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.orderId, function (data, err) {
+    db.executeSql("UPDATE `trades` set `sellerName`='" + req.body.sellerName + "',`sellerId`='" + req.body.sellerId + "',`sellerQuantity`='" + req.body.sell_quantity + "',`sellerRate`='null',`materialImage`='" + req.body.materialImage + "',`deliveryTerms`='" + req.body.diliveryTerms + "',`tradeStatus`='PENDING',`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.orderId, function (data, err) {
         if (err) {
             console.log(err);
         } else {
-            res.json('success');
+            if (req.body.materialMultiImage.length > 0) {
+                for (let i = 0; i < req.body.materialMultiImage.length; i++) {
+                    db.executeSql("INSERT INTO `materialimage`(`tradeId`, `image`) VALUES (" + req.body.orderId + ",'" + req.body.materialMultiImage[i] + "');", function (data1, err) {
+                        if (err) {
+                            res.json("error");
+                        } else {
+                        }
+                    });
+                }
+            }
         }
     })
+    return res.json("success");
 })
 
 router.post("/getNewTradingReqForSeller", midway.checkToken, (req, res, next) => {
-    db.executeSql("SELECT t.id as orderId, u.firstName as buyFirstName,t.payment_days, u.lastName as buyLastName, t.buyerLocation ,t.req_quality,t.req_quantity,t.buyerRate,t.deliveryTerms,t.payment_validity,t.payment_terms, a.street,a.state,a.city,a.pincode from trades t join user u on u.id = t.buyerId join address a on a.uid = t.buyerId where  t.req_quality='" + req.body.mat_qlty + "'  and t.tradeStatus='IDEAL';", function (data, err) {
+    db.executeSql("SELECT t.id as orderId, u.firstName as buyFirstName,t.payment_days, u.lastName as buyLastName,t.req_quality,t.req_quantity,t.buyerRate,t.deliveryTerms,t.tradeStatus,t.payment_validity,t.payment_terms, a.street,a.state,a.city,a.pincode from trades t join user u on u.id = t.buyerId join address a on a.uid = t.buyerId where  t.req_quality='" + req.body.mat_qlty + "';", function (data, err) {
         if (err) {
             console.log(err);
         } else {
