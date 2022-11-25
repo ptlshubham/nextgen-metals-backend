@@ -20,20 +20,21 @@ router.post("/newTradeRequest", midway.checkToken, (req, res, next) => {
 });
 
 router.post("/SaveTransporterDetails", midway.checkToken, (req, res, next) => {
-    db.executeSql("INSERT INTO `transport_trade`(`orderId`, `startDate`, `driverContact`, `vehicleNo`, `weightSlip`, `createdDate`) VALUES (" + req.body.tradeId + ",CURRENT_TIMESTAMP," + req.body.transporterContact + ",'" + req.body.transportVehicle + "','" + req.body.materialWeightSlip + "',CURRENT_TIMESTAMP);", function (data, err) {
-        if (err) {
-            console.log(err);
-        } else {
-            db.executeSql("UPDATE `trades` set `transportDetailsStatus`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.tradeId, function (data, err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                }
-            })
-        }
-        return res.json('sucess');
-
-    });
+    for (let i = 0; i < req.body.length; i++) {
+        db.executeSql("INSERT INTO `transport_trade`(`orderId`, `startDate`, `driverContact`, `vehicleNo`, `weightSlip`, `createdDate`) VALUES (" + req.body[i].tradeId + ",CURRENT_TIMESTAMP," + req.body[i].transporterContact + ",'" + req.body[i].transportVehicle + "','" + req.body[i].transportImage + "',CURRENT_TIMESTAMP);", function (data, err) {
+            if (err) {
+                console.log(err);
+            } else {
+                db.executeSql("UPDATE `trades` set `transportDetailsStatus`=true,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body[i].tradeId, function (data, err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                    }
+                })
+            }
+        });
+    }
+    return res.json('success');
 });
 
 router.post("/GetTransporterDetailsbyIdForSeller", midway.checkToken, (req, res, next) => {
