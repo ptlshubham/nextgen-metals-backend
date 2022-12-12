@@ -14,7 +14,7 @@ router.post("/newTradeRequest", midway.checkToken, (req, res, next) => {
         if (err) {
             console.log(err);
         } else {
-            return res.json('sucess');
+            return res.json('success');
         }
     });
 });
@@ -37,7 +37,7 @@ router.post("/SaveTransporterDetails", midway.checkToken, (req, res, next) => {
     return res.json('success');
 });
 router.post("/SaveDeliveryRecieptData", midway.checkToken, (req, res, next) => {
-    db.executeSql("UPDATE `transport_trade` set `endDate`=CURRENT_TIMESTAMP,`deliveryReciept`='" + req.body.deliveryReciept + "',`deliveryStatus`='Delivered',`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.id, function (data, err) {
+    db.executeSql("UPDATE `transport_trade` set `endDate`=CURRENT_TIMESTAMP,`deliveryReciept`='" + req.body.deliveryReciept + "',`deliveryStatus`='Delivered',`dueDate`='" + req.body.dueDate + "',`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.id, function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -46,7 +46,7 @@ router.post("/SaveDeliveryRecieptData", midway.checkToken, (req, res, next) => {
     })
 });
 router.post("/SaveBuyerPaymentDetails", midway.checkToken, (req, res, next) => {
-    db.executeSql("UPDATE `transport_trade` set `utrNo`='"+req.body.utrNo+"',`paymentImage`='" + req.body.paymentImage + "',`paymentDate`=CURRENT_TIMESTAMP,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.transportId, function (data, err) {
+    db.executeSql("UPDATE `transport_trade` set `utrNo`='" + req.body.utrNo + "',`paymentImage`='" + req.body.paymentImage + "',`paymentDate`=CURRENT_TIMESTAMP,`updatedDate`=CURRENT_TIMESTAMP WHERE id=" + req.body.transportId, function (data, err) {
         if (err) {
             console.log(err);
         } else {

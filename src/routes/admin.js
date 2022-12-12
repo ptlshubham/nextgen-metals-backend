@@ -14,58 +14,67 @@ const schedule = require('node-schedule');
 
 
 router.post("/RegisterNewUser", (req, res, next) => {
-    db.executeSql("select * from user where email="+req.body.email,function(data,err){
-        if(data.length >0){
+    console.log(req.body, 'vgfyfyiftudtydtyg')
+    db.executeSql("select * from user where email='" + req.body.email + "'", function (data, err) {
+        console.log(data)
+        if (data != null) {
             res.json('duplicate email');
-        }else{
-            db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`,`avg_mnth_trade`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`,`profileUpdation`) VALUES ('"+req.body.select+"','"+req.body.fname+"','"+req.body.lname+"','"+req.body.contact+"','"+req.body.email+"','"+req.body.regAs+"','"+req.body.companyname+"','"+req.body.designation+"','"+req.body.avg_mnth_trade+"','"+req.body.gstno+"','"+req.body.workphone+"','"+req.body.selectMaterial+"',false,CURRENT_TIMESTAMP,false)", function (data, err) {
+        } else {
+            db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`,`avg_mnth_trade`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`,`profileUpdation`) VALUES ('" + req.body.select + "','" + req.body.fname + "','" + req.body.lname + "','" + req.body.contact + "','" + req.body.email + "','" + req.body.regAs + "','" + req.body.companyname + "','" + req.body.designation + "','" + req.body.avg_mnth_trade + "','" + req.body.gstno + "','" + req.body.workphone + "','" + req.body.selectMaterial + "',false,CURRENT_TIMESTAMP,false)", function (data, err) {
                 if (err) {
                     res.json("error");
                 } else {
-                    return res.json('sucess');
+                    console
+                    db.executeSql("INSERT INTO `address`(`uid`, `street`, `city`, `state`, `pincode`, `landmark`, `createddate`) VALUES (" + data.insertId + ",'" + req.body.address + "','" + req.body.city + "','" + req.body.selectState + "','" + req.body.pincode + "','" + req.body.landmark + "',CURRENT_TIMESTAMP)", function (data, err) {
+                        if (err) {
+                            res.json("error");
+                        } else {
+                            return res.json('sucess');
+                        }
+                    });
                 }
             });
         }
     })
-   
+
 });
 
-router.post("/RegisterNewUser", (req, res, next) => {
+// router.post("/RegisterNewUser", (req, res, next) => {
+//     console.log(req.body)
+//     db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`,`avg_mnth_trade`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`) VALUES ('"+req.body.select+"','"+req.body.fname+"','"+req.body.lname+"','"+req.body.contact+"','"+req.body.email+"','"+req.body.regAs+"','"+req.body.companyname+"','"+req.body.designation+"','"+req.body.avg_mnth_trade+"','"+req.body.gstno+"','"+req.body.workphone+"','"+req.body.selectMaterial+"',false,CURRENT_TIMESTAMP)", function (data, err) {
+//         if (err) {
+//             res.json("error");
+//         } else {
+//             return res.json('sucess');
+//         }
+//     });
+// });
+
+
+router.post("/completeProfile", midway.checkToken, (req, res, next) => {
     console.log(req.body)
-    db.executeSql("INSERT INTO `user`(`salutation`, `firstName`, `lastName`, `phone`, `email`, `role`, `companyName`, `designation`,`avg_mnth_trade`, `GST_no`, `company_contact`, `material_quality`, `KYC_status`, `created_date`) VALUES ('"+req.body.select+"','"+req.body.fname+"','"+req.body.lname+"','"+req.body.contact+"','"+req.body.email+"','"+req.body.regAs+"','"+req.body.companyname+"','"+req.body.designation+"','"+req.body.avg_mnth_trade+"','"+req.body.gstno+"','"+req.body.workphone+"','"+req.body.selectMaterial+"',false,CURRENT_TIMESTAMP)", function (data, err) {
+    db.executeSql("UPDATE `user` SET `firstName`='" + req.body.firstName + "',`lastName`='" + req.body.lastName + "',`phone`='" + req.body.phone + "',`email`='" + req.body.email + "',`companyName`='" + req.body.companyName + "',`designation`='" + req.body.designation + "',`avg_mnth_trade`='" + req.body.avg_mnth_trade + "',`GST_no`='" + req.body.GST_no + "',`company_contact`='" + req.body.company_contact + "',`material_quality`='" + req.body.material_quality + "',`bank_name`='" + req.body.bank_name + "',`bank_acc_no`='" + req.body.bank_acc_no + "',`acc_type`='" + req.body.acc_type + "',`acc_holder_name`='" + req.body.acc_holder_name + "',`isfc_code`='" + req.body.isfc_code + "',`branch_name`='" + req.body.branch_name + "',`cancel_cheque`='" + req.body.cancel_cheque + "',`PAN_card`='" + req.body.PAN_card + "',`updated_date`=CURRENT_TIMESTAMP,`profileUpdation`=true WHERE id=" + req.body.id, function (data, err) {
         if (err) {
-            res.json("error");
-        } else {
-            return res.json('sucess');
-        }
-    });
-});
-
-
-router.post("/completeProfile", midway.checkToken,(req,res,next)=>{
-    console.log(req.body)
-    db.executeSql("UPDATE `user` SET `firstName`='"+req.body.firstName+"',`lastName`='"+req.body.lastName+"',`phone`='"+req.body.phone+"',`email`='"+req.body.email+"',`companyName`='"+req.body.companyName+"',`designation`='"+req.body.designation+"',`avg_mnth_trade`='"+req.body.avg_mnth_trade+"',`GST_no`='"+req.body.GST_no+"',`company_contact`='"+req.body.company_contact+"',`material_quality`='"+req.body.material_quality+"',`bank_name`='"+req.body.bank_name+"',`bank_acc_no`='"+req.body.bank_acc_no+"',`acc_type`='"+req.body.acc_type+"',`acc_holder_name`='"+req.body.acc_holder_name+"',`isfc_code`='"+req.body.isfc_code+"',`branch_name`='"+req.body.branch_name+"',`cancel_cheque`='"+req.body.cancel_cheque+"',`PAN_card`='"+req.body.PAN_card+"',`updated_date`=CURRENT_TIMESTAMP,`profileUpdation`=true WHERE id="+req.body.id,function(data,err){
-        if(err){
             console.log(err);
-        }else{
+        } else {
             res.json('success');
         }
     })
 })
 
-router.get("/getUserDetailById/:id", midway.checkToken,(req,res,next)=>{
-    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid where u.id="+req.params.id,function(data,err){
-        if(err){
+router.get("/getUserDetailById/:id", midway.checkToken, (req, res, next) => {
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid where u.id=" + req.params.id, function (data, err) {
+        if (err) {
             console.log(err)
         }
-        else{
+        else {
             res.json(data)
         }
     })
 })
 
 router.get("/getAllUser", midway.checkToken, (req, res, next) => {
-    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid;;", function (data, err) {
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid;", function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -95,34 +104,37 @@ router.get("/getAllSeller", midway.checkToken, (req, res, next) => {
 });
 
 router.get("/getAllKYCPendingUser", midway.checkToken, (req, res, next) => {
-    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid; where u.KYC_status=false;", function (data, err) {
+    db.executeSql("SELECT * FROM user u JOIN address a ON u.id = a.uid where u.KYC_status=false;", function (data, err) {
         if (err) {
             console.log(err);
         } else {
+            console.log(data, 'pendoinf')
+
             return res.json(data);
         }
     })
 });
 
 router.post("/updateKYCUser", midway.checkToken, (req, res, next) => {
-    db.executeSql("update user set KYC_status=true, KYC_date=CURRENT_TIMESTAMP where id="+req.body.id, function (data, err) {
+    console.log(req.body.id,'upfyfdyafyucfyufcuyhj')
+    db.executeSql("update user set KYC_status=true, KYC_date=CURRENT_TIMESTAMP where id=" + req.body.id, function (data, err) {
         if (err) {
             console.log(err);
         } else {
-            db.executeSql("select * from user where id="+req.body.id,function(data1,err){
-                if(err){
+            db.executeSql("select * from user where id=" + req.body.id, function (data1, err) {
+                if (err) {
                     console.log(er);
-                }else{
+                } else {
                     const replacements = {
-                        votp: data1[0].firstName+'@123',
+                        votp: data1[0].firstName + '@123',
                         email: data1[0].firstName,
-                        id:req.body.id
+                        id: req.body.id
                     };
 
-                    
+
                     mail('newpassword.html', replacements, data1[0].email, "Setting Password", "New Password for Nextgen ");
                     var salt = '7fa73b47df808d36c5fe328546ddef8b9011b2c6';
-                    var repass = salt + '' + data1[0].firstName+'@123';
+                    var repass = salt + '' + data1[0].firstName + '@123';
                     var encPassword = crypto.createHash('sha1').update(repass).digest('hex');
                     db.executeSql("UPDATE user SET password='" + encPassword + "' WHERE id=" + req.body.id + ";", function (data, err) {
                         if (err) {
@@ -133,7 +145,7 @@ router.post("/updateKYCUser", midway.checkToken, (req, res, next) => {
                     });
                 }
             })
-          
+
             // return res.json('success');
         }
     })
@@ -277,7 +289,7 @@ router.get("/GetMonthlyTotal", (req, res, next) => {
     })
 });
 
- 
+
 
 
 
@@ -302,7 +314,7 @@ function mail(filename, data, toemail, subj, mailname) {
         to: toemail,
         Name: mailname,
         html: htmlToSend,
-       
+
 
     };
     transporter.sendMail(mailOptions, function (error, info) {
