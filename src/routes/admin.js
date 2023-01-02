@@ -17,10 +17,10 @@ router.post("/RegisterNewUser", (req, res, next) => {
     console.log(req.body, 'vgfyfyiftudtydtyg')
     db.executeSql("select * from user where Email='" + req.body.email + "'", function (data, err) {
         console.log(data.multiDefaultOption)
-        if (data != null && data.length>0) {
+        if (data != null && data.length > 0) {
             res.json('duplicate email');
         } else {
-            db.executeSql("INSERT INTO `user`(`Salutation`, `FirstName`, `LastName`, `Phone`, `Email`, `Role`, `CompanyName`, `Designation`,`AvgMonthTrade`, `GSTNo`, `CompanyContact`, `MaterialQuality`, `KYCStatus`, `CreatedDate`,`ProfileUpdation`) VALUES ('" + req.body.select + "','" + req.body.fname + "','" + req.body.lname + "','" + req.body.contact + "','" + req.body.email + "','" + req.body.regAs + "','" + req.body.companyname + "','" + req.body.designation + "','" + req.body.avg_mnth_trade + "','" + req.body.gstno + "','" + req.body.workphone + "','" + req.body.multiDefaultOption + "',false,CURRENT_TIMESTAMP,false)", function (data, err) {
+            db.executeSql("INSERT INTO `user`(`Salutation`, `FirstName`, `LastName`, `Phone`, `Email`, `Role`, `CompanyName`, `Designation`,`AvgMonthTrade`, `GSTNo`, `CompanyContact`, `MaterialQuality`, `KYCStatus`, `CreatedDate`,`ProfileUpdation`) VALUES ('" + req.body.select + "','" + req.body.fname + "','" + req.body.lname + "','" + req.body.contact + "','" + req.body.email + "','" + req.body.regAs + "','" + req.body.companyname + "','" + req.body.desgination + "','" + req.body.avg_mnth_trade + "','" + req.body.gstno + "','" + req.body.workphone + "','" + req.body.multiDefaultOption + "',false,CURRENT_TIMESTAMP,false)", function (data, err) {
                 if (err) {
                     res.json("error");
                 } else {
@@ -54,7 +54,7 @@ router.post("/RegisterNewUser", (req, res, next) => {
 router.post("/completeProfile", midway.checkToken, (req, res, next) => {
     console.log(req.body)
     console.log("req.body")
-    db.executeSql("UPDATE `user` SET `FirstName`='" + req.body.FirstName + "',`LastName`='" + req.body.LastName + "',`Phone`='" + req.body.Phone + "',`Email`='" + req.body.Email + "',`CompanyName`='" + req.body.CompanyName + "',`Designation`='" + req.body.Designation + "',`AvgMonthTrade`='" + req.body.AvgMonthTrade + "',`GSTNo`='" + req.body.GSTNo + "',`CompanyContact`='" + req.body.CompanyContact + "',`MaterialQuality`='" + req.body.MaterialQuality + "',`BankName`='" + req.body.BankName + "',`BankAccNo`='" + req.body.BankAccNo + "',`AccType`='" + req.body.AccType + "',`AccHolderName`='" + req.body.AccHolderName + "',`ISFCCode`='" + req.body.ISFCCode + "',`BranchName`='" + req.body.BranchName + "',`CancelCheque`='" + req.body.CancelCheque + "',`PANCard`='" + req.body.PANCard + "',`UpdatedDate`=CURRENT_TIMESTAMP,`ProfileUpdation`=true WHERE Id=" + req.body.uid, function (data, err) {
+    db.executeSql("UPDATE `user` SET `FirstName`='" + req.body.FirstName + "',`LastName`='" + req.body.LastName + "',`Phone`='" + req.body.Phone + "',`Email`='" + req.body.Email + "',`CompanyName`='" + req.body.CompanyName + "',`Designation`='" + req.body.Designation + "',`AvgMonthTrade`='" + req.body.AvgMonthTrade + "',`GSTNo`='" + req.body.GSTNo + "',`CompanyContact`='" + req.body.CompanyContact + "',`MaterialQuality`='" + req.body.MaterialQuality + "',`BankName`='" + req.body.BankName + "',`BankAccNo`='" + req.body.BankAccNo + "',`AccType`='" + req.body.AccType + "',`AccHolderName`='" + req.body.AccHolderName + "',`ISFCCode`='" + req.body.ISFCCode + "',`BranchName`='" + req.body.BranchName + "',`CancelCheque`='" + req.body.CancelCheque + "',`PANCard`='" + req.body.PANCard + "',`UpdatedDate`=CURRENT_TIMESTAMP,`ProfileUpdation`=true WHERE Id=" + req.body.UserId , function (data, err) {
         if (err) {
             console.log(err);
         } else {
@@ -74,11 +74,11 @@ router.get("/getUserDetailById/:id", midway.checkToken, (req, res, next) => {
     })
 })
 
-router.post("/GetAllTradesByUseridForBuyer",midway.checkToken,(req,res,next)=>{
-    db.executeSql("select * from buyer_trade where BuyerId="+req.body.buyerId,function(data,err){
-        if(err){
+router.post("/GetAllTradesByUseridForBuyer", midway.checkToken, (req, res, next) => {
+    db.executeSql("select * from buyer_trade where BuyerId=" + req.body.buyerId, function (data, err) {
+        if (err) {
             console.log(err);
-        }else{
+        } else {
             res.json(data);
         }
     })
@@ -127,7 +127,7 @@ router.get("/getAllKYCPendingUser", midway.checkToken, (req, res, next) => {
 });
 
 router.post("/updateKYCUser", midway.checkToken, (req, res, next) => {
-    console.log(req.body.id,'upfyfdyafyucfyufcuyhj')
+    console.log(req.body.id, 'upfyfdyafyucfyufcuyhj')
     db.executeSql("update user set KYCStatus=true, KYCDate=CURRENT_TIMESTAMP where Id=" + req.body.id, function (data, err) {
         if (err) {
             console.log(err);
